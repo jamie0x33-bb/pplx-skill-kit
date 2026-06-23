@@ -1,0 +1,17 @@
+[project]
+name = "pplx-skill-kit"
+version = "0.5.1"
+description = "Toolkit for building and debugging Perplexity Computer skills and connector integrations"
+requires-python = ">=3.11"
+dependencies = []
+license = { text = "MIT" }
+
+[project.scripts]
+skill-kit = "pplx_skill_kit.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
