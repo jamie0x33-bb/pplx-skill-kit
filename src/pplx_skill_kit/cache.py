@@ -7,11 +7,12 @@ The connector listing is over a megabyte and rarely changes within a session, so
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 
 CACHE_DIR = Path.home() / ".cache" / "pplx-skill-kit"
-TTL_SECONDS = 3600
+TTL_SECONDS = int(os.environ.get("SKILL_KIT_CACHE_TTL", "3600"))
 
 
 def _path(key: str) -> Path:
