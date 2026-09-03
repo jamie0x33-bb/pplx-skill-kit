@@ -10,12 +10,13 @@ Routes are the ones the sandbox tooling uses:
 from __future__ import annotations
 
 import json
+import os
 import urllib.error
 import urllib.request
 
 from .config import ConnectorConfig, load
 
-TIMEOUT = 60
+TIMEOUT = int(os.environ.get("SKILL_KIT_TIMEOUT", "60"))
 
 
 class ConnectorError(RuntimeError):
