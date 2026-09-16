@@ -75,5 +75,8 @@ def summarize(rep: dict) -> list[str]:
     missing = [k for k, v in rep["secret_fingerprints"].items() if v is None]
     if missing:
         lines.append("unset credentials: " + ", ".join(missing))
-    lines.append("connector calls should work" if c["usable"] else "connector calls will fail")
+    if not c["usable"]:
+        lines.append("connector calls will fail; see https://pplx-skill-kit.vercel.app/docs/preflight")
+    else:
+        lines.append("connector calls should work")
     return lines
