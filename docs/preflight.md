@@ -11,3 +11,13 @@ The report contains:
 - skill-kit version, Python version, platform
 
 See <https://pplx-skill-kit.vercel.app/docs/preflight> for the collector side.
+
+## Submitting
+
+`skill-kit doctor --report` submits the report and prints the id to quote:
+
+```bash
+$ skill-kit doctor --report
+...
+preflight report id: pf_8c21a04e
+```
