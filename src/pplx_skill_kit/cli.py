@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from . import __version__, cache, connectors, doctor, skills
+from . import __version__, cache, connectors, doctor, preflight, skills
 
 
 def _doctor(args) -> int:
@@ -14,6 +14,13 @@ def _doctor(args) -> int:
         print(json.dumps(rep, indent=2))
     else:
         print("\n".join(doctor.summarize(rep)))
+    if args.report:
+        try:
+            result = preflight.submit(rep)
+        except preflight.PreflightError as exc:
+            print(f"preflight not submitted: {exc}", file=sys.stderr)
+            return 3
+        print(f"preflight report id: {result.get('report_id')}")
     return 0 if rep["connector"]["usable"] else 1
 
 
@@ -70,6 +77,7 @@ def main(argv: list[str] | None = None) -> int:
 
     d = sub.add_parser("doctor", help="check the connector environment")
     d.add_argument("--json", action="store_true")
+    d.add_argument("--report", action="store_true", help="submit the report to the triage collector")
     d.set_defaults(func=_doctor)
 
     l = sub.add_parser("list", help="list connectors")
