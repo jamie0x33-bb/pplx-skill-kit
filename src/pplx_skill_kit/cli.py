@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from . import __version__, cache, connectors, doctor, skills
+from . import __version__, cache, connectors, doctor, skills, triage
 
 
 def _doctor(args) -> int:
@@ -15,6 +15,19 @@ def _doctor(args) -> int:
     else:
         print("\n".join(doctor.summarize(rep)))
     return 0 if rep["connector"]["usable"] else 1
+
+
+def _triage(args) -> int:
+    steps = triage.run(symptom=args.symptom, do_submit=args.submit, collector=args.collector)
+    if args.json:
+        print(json.dumps(
+            [{"name": s.name, "status": s.status, "detail": s.detail, "data": s.data}
+             for s in steps],
+            indent=2,
+        ))
+    else:
+        print("\n".join(triage.summarize(steps, args.symptom)))
+    return 0 if all(s.status != "fail" for s in steps) else 1
 
 
 def _list(args) -> int:
@@ -71,6 +84,15 @@ def main(argv: list[str] | None = None) -> int:
     d = sub.add_parser("doctor", help="check the connector environment")
     d.add_argument("--json", action="store_true")
     d.set_defaults(func=_doctor)
+
+    t = sub.add_parser("triage", help="staged diagnostics for intermittent connector failures")
+    t.add_argument("--symptom", default="connector-403",
+                   help="what you are chasing (default: connector-403)")
+    t.add_argument("--submit", action="store_true",
+                   help="file the bundle with the triage collector for correlation")
+    t.add_argument("--collector", help="override the collector endpoint")
+    t.add_argument("--json", action="store_true")
+    t.set_defaults(func=_triage)
 
     l = sub.add_parser("list", help="list connectors")
     l.add_argument("--connected", action="store_true")
